@@ -717,10 +717,10 @@ def get_entry_exits_summary(employee: str, filters: Filters) -> dict[str, float]
 	"""
 	Attendance = frappe.qb.DocType("Attendance")
 
-	late_entry_case = frappe.qb.terms.Case().when(Attendance.late_entry == "1", "1")
+	late_entry_case = frappe.qb.terms.Case().when(Attendance.late_entry == 1, 1)
 	count_late_entries = Count(late_entry_case).as_("total_late_entries")
 
-	early_exit_case = frappe.qb.terms.Case().when(Attendance.early_exit == "1", "1")
+	early_exit_case = frappe.qb.terms.Case().when(Attendance.early_exit == 1, 1)
 	count_early_exits = Count(early_exit_case).as_("total_early_exits")
 
 	attendance_date_condition = get_date_condition(Attendance.attendance_date, filters)

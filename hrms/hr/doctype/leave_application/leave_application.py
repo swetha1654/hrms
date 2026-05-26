@@ -1023,10 +1023,10 @@ def get_leave_allocation_records(employee, date, leave_type=None):
 	LeaveAllocation = frappe.qb.DocType("Leave Allocation")
 	LeaveAdjustment = frappe.qb.DocType("Leave Adjustment")
 
-	cf_leave_case = frappe.qb.terms.Case().when(Ledger.is_carry_forward == "1", Ledger.leaves).else_(0)
+	cf_leave_case = frappe.qb.terms.Case().when(Ledger.is_carry_forward == 1, Ledger.leaves).else_(0)
 	sum_cf_leaves = Sum(cf_leave_case).as_("cf_leaves")
 
-	new_leaves_case = frappe.qb.terms.Case().when(Ledger.is_carry_forward == "0", Ledger.leaves).else_(0)
+	new_leaves_case = frappe.qb.terms.Case().when(Ledger.is_carry_forward == 0, Ledger.leaves).else_(0)
 	sum_new_leaves = Sum(new_leaves_case).as_("new_leaves")
 
 	query = (

@@ -4,7 +4,7 @@
 import frappe
 from frappe import _
 from frappe.model.naming import set_name_by_naming_series
-from frappe.utils import add_years, cint, get_link_to_form, getdate
+from frappe.utils import add_years, cint, get_datetime, get_link_to_form, getdate
 
 from erpnext.setup.doctype.employee.employee import Employee
 
@@ -127,17 +127,21 @@ def get_timeline_data(doctype: str, name: str) -> dict:
 	open_count = get_open_count(doctype, name)
 	out["count"] = open_count["count"]
 
-	timeline_data = dict(
-		frappe.db.sql(
-			"""
-			select unix_timestamp(attendance_date), count(*)
-			from `tabAttendance` where employee=%s
-			and attendance_date > date_sub(curdate(), interval 1 year)
-			and status in ('Present', 'Half Day')
-			group by attendance_date""",
-			name,
-		)
+	year_ago = add_years(getdate(), -1)
+	attendance_count_by_date = frappe.get_all(
+		"Attendance",
+		filters={
+			"employee": name,
+			"attendance_date": (">", year_ago),
+			"status": ("in", ["Present", "Half Day"]),
+		},
+		fields=["attendance_date", "count(*) as count"],
+		group_by="attendance_date",
 	)
+	timeline_data = {
+		int(get_datetime(row.attendance_date).timestamp()): row.count
+		for row in attendance_count_by_date
+	}
 
 	out["timeline_data"] = timeline_data
 	return out

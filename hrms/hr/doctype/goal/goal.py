@@ -1,11 +1,10 @@
 # Copyright (c) 2022, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-from pypika import CustomFunction
+from frappe.query_builder.functions import Avg, Coalesce
 
 import frappe
 from frappe import _
-from frappe.query_builder.functions import Avg
 from frappe.utils import cint, flt
 from frappe.utils.nestedset import NestedSet
 
@@ -166,8 +165,7 @@ def get_children(doctype: str, parent: str, is_root: bool = False, **filters) ->
 		# via expand child
 		query = query.where(Goal.parent_goal == parent)
 	else:
-		ifnull = CustomFunction("IFNULL", ["value", "default"])
-		query = query.where(ifnull(Goal.parent_goal, "") == "")
+		query = query.where(Coalesce(Goal.parent_goal, "") == "")
 
 	if filters.get("date_range"):
 		date_range = frappe.parse_json(filters.get("date_range"))

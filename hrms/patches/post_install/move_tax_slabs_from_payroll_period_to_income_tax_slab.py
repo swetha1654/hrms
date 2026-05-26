@@ -60,13 +60,14 @@ def execute():
 			income_tax_slab.flags.ignore_mandatory = True
 			income_tax_slab.submit()
 
-			frappe.db.sql(
-				""" UPDATE `tabTaxable Salary Slab`
-				SET parent = %s , parentfield = 'slabs' , parenttype = "Income Tax Slab"
-				WHERE parent = %s
-			""",
-				(income_tax_slab.name, period.name),
-				as_dict=1,
+			frappe.db.set_value(
+				"Taxable Salary Slab",
+				{"parent": period.name},
+				{
+					"parent": income_tax_slab.name,
+					"parentfield": "slabs",
+					"parenttype": "Income Tax Slab",
+				},
 			)
 
 			if i == 0:

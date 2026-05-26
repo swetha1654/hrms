@@ -14,6 +14,6 @@ def execute():
 			LeaveType.based_on_date_of_joining == 1
 		).run()
 
-		frappe.db.sql_ddl("alter table `tabLeave Type` drop column `based_on_date_of_joining`")
+		frappe.db.delete_column("Leave Type", "based_on_date_of_joining")
 		# clear cache for doctype as it stores table columns in cache
 		frappe.clear_cache(doctype="Leave Type")
