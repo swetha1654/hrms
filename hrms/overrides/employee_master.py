@@ -131,14 +131,22 @@ def get_timeline_data(doctype: str, name: str) -> dict:
 	out["count"] = open_count["count"]
 
 	timeline_data = dict(
-		frappe.db.sql(
-			"""
+		frappe.db.multisql(
+			{
+				"mariadb": """
 			select unix_timestamp(attendance_date), count(*)
 			from `tabAttendance` where employee=%s
 			and attendance_date > date_sub(curdate(), interval 1 year)
 			and status in ('Present', 'Half Day')
 			group by attendance_date""",
-			name,
+				"postgres": """
+			select extract(epoch from attendance_date::timestamp)::bigint, count(*)
+			from "tabAttendance" where employee=%s
+			and attendance_date > CURRENT_DATE - INTERVAL '1 year'
+			and status in ('Present', 'Half Day')
+			group by attendance_date""",
+			},
+			(name,),
 		)
 	)
 

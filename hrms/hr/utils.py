@@ -659,8 +659,8 @@ def get_sal_slip_total_benefit_given(employee, payroll_period, component=False):
 	from `tabSalary Slip` ss, `tabSalary Detail` sd
 	where ss.employee=%(employee)s
 	and ss.docstatus = 1 and ss.name = sd.parent
-	and sd.is_flexible_benefit = 1 and sd.parentfield = "earnings"
-	and sd.parenttype = "Salary Slip"
+	and sd.is_flexible_benefit = 1 and sd.parentfield = 'earnings'
+	and sd.parenttype = 'Salary Slip'
 	and (ss.start_date between %(start_date)s and %(end_date)s
 		or ss.end_date between %(start_date)s and %(end_date)s
 		or (ss.start_date < %(start_date)s and ss.end_date > %(end_date)s))
@@ -745,7 +745,7 @@ def calculate_tax_with_marginal_relief(tax_slab, tax_amount, annual_taxable_earn
 def get_previous_claimed_amount(employee, payroll_period, non_pro_rata=False, component=False):
 	total_claimed_amount = 0
 	query = """
-	select sum(claimed_amount) as 'total_amount'
+	select sum(claimed_amount) as total_amount
 	from `tabEmployee Benefit Claim`
 	where employee=%(employee)s
 	and docstatus = 1

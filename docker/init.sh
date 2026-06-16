@@ -15,7 +15,7 @@ bench init --skip-redis-config-generation frappe-bench
 cd frappe-bench
 
 # Use containers instead of localhost
-bench set-mariadb-host mariadb
+bench set-config -g db_host postgres
 bench set-redis-cache-host redis://redis:6379
 bench set-redis-queue-host redis://redis:6379
 bench set-redis-socketio-host redis://redis:6379
@@ -25,13 +25,16 @@ sed -i '/redis/d' ./Procfile
 sed -i '/watch/d' ./Procfile
 
 bench get-app erpnext
-bench get-app hrms
+bench get-app hrms --branch postgresql-develop
 
 bench new-site hrms.localhost \
 --force \
---mariadb-root-password 123 \
---admin-password admin \
---no-mariadb-socket
+--db-type postgres \
+--db-host postgres \
+--db-port 5432 \
+--db-root-username postgres \
+--db-root-password 123 \
+--admin-password admin
 
 bench --site hrms.localhost install-app hrms
 bench --site hrms.localhost set-config developer_mode 1
