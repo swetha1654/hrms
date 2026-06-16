@@ -1726,14 +1726,23 @@ def get_payroll_entries_for_jv(
 	doctype: str, txt: str, searchfield: str, start: int, page_len: int, filters: dict
 ) -> list:
 	# nosemgrep: frappe-semgrep-rules.rules.frappe-using-db-sql
-	return frappe.db.sql(
-		f"""
+	return frappe.db.multisql(
+		{
+			"mariadb": f"""
 		select name from `tabPayroll Entry`
 		where `{searchfield}` LIKE %(txt)s
 		and name not in
 			(select reference_name from `tabJournal Entry Account`
 				where reference_type="Payroll Entry")
 		order by name limit %(start)s, %(page_len)s""",
+			"postgres": f"""
+		select name from "tabPayroll Entry"
+		where "{searchfield}" LIKE %(txt)s
+		and name not in
+			(select reference_name from "tabJournal Entry Account"
+				where reference_type='Payroll Entry')
+		order by name limit %(page_len)s offset %(start)s""",
+		},
 		{"txt": "%%%s%%" % txt, "start": start, "page_len": page_len},
 	)
 
