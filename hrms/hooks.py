@@ -299,9 +299,11 @@ global_search_doctypes = {
 	],
 }
 
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "hrms.event.get_events"
-# }
+override_whitelisted_methods = {
+	# Fix PostgreSQL incompatibility: frappe passes goal_field as a string literal
+	# instead of a column reference, causing "function sum(unknown) is not unique"
+	"frappe.utils.goal.get_monthly_goal_graph_data": "hrms.overrides.goal.get_monthly_goal_graph_data",
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
